@@ -54,12 +54,8 @@
         "typescript": "^3.8.3",
         "typescript-coverage-report": "^0.1.3"
     },
-<<<<<<< HEAD
-    "optionalDependencies": {}
-=======
     "optionalDependencies": {
         "fabric-ca-client": "^2.2.17",
         "fabric-network": "v2.1.0"
     }
->>>>>>> 83c4eb4 (BBD-435 발급자 샘플 수정)
 }

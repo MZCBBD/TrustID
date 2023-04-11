@@ -1,4 +1,5 @@
 import { exit } from "process";
+import { AccessPolicy, PolicyType } from "../dist";
 
 // Load SDK library.
 const sdk = require("../dist/index.js");
