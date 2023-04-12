@@ -1,4 +1,5 @@
 import { exit } from "process";
+import { AccessPolicy, PolicyType } from "../dist";
 
 // Load SDK library.
 const sdk = require("../dist/index.js");
@@ -15,21 +16,21 @@ wal.setKeystore(ks)
 const ccp = JSON.parse(fs.readFileSync("../connection-profile.json", 'utf8'));
 const config = {
     stateStore: '/tmp/statestore',
-    caURL: 'https://ca.org1.telefonica.com:7054',
-    caName: 'telefonicaca',
-    caAdmin: 'adminCA',
-    caPassword: 'adminpw',
+    caURL: 'https://ca.did.byondz.io:7054',
+    caName: 'ca-did',
+    caAdmin: 'didadmin',
+    caPassword: 'didadminpw',
     tlsOptions: {
-        trustedRoots: "-----BEGIN CERTIFICATE-----MIICODCCAd2gAwIBAgIQe96XlcvMediXzNPJmbi3KzAKBggqhkjOPQQDAjBmMQswCQYDVQQGEwJFUzEPMA0GA1UECBMGTWFkcmlkMQ8wDQYDVQQHEwZNYWRyaWQxGzAZBgNVBAoTEnRlbGVmb25pY2EudGVmLmNvbTEYMBYGA1UEAxMPdGxzdGVsZWZvbmljYWNhMB4XDTIwMDUyNzEwNTIwMFoXDTMwMDUyNTEwNTIwMFowZjELMAkGA1UEBhMCRVMxDzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMRswGQYDVQQKExJ0ZWxlZm9uaWNhLnRlZi5jb20xGDAWBgNVBAMTD3Rsc3RlbGVmb25pY2FjYTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABDvxxdoWt6oJh6D1QBJ/ANKi9Dd0bMIJLb70X5hdAyeyX2tTLfFRVT+/Sn+agSW0pOl+Li4J2gLtrW/jOSC7sWejbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNVHQ4EIgQgpzV1sl/p4Tkgcz6P6WBonEFQpAMTCFmKV/o30VpBdGIwCgYIKoZIzj0EAwIDSQAwRgIhAIY2hPL2ETYhWJUuYGtqipfQiKfyi8L75yG4b7TeG2soAiEAx5u6JmQBjUbeYhB8pL2b2NICGokKZ/Z0ybXBb3b86rA=-----END CERTIFICATE-----",
+        trustedRoots: "-----BEGIN CERTIFICATE-----\nMIICvjCCAmWgAwIBAgIUZtE1bxTys5M2IE1Mf3diJRwVYgEwCgYIKoZIzj0EAwIw\nXDELMAkGA1UEBhMCS1IxDjAMBgNVBAgTBVNlb3VsMQ4wDAYDVQQHEwVTZW91bDES\nMBAGA1UECxMJYnlvbmR6LmlvMRkwFwYDVQQDExBmYWJyaWMtY2Etc2VydmVyMB4X\nDTIzMDQwNzA0MTkwMFoXDTI0MDQwNjA0MjQwMFowWzELMAkGA1UEBhMCVVMxFzAV\nBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQKEwtIeXBlcmxlZGdlcjENMAsG\nA1UECxMEcGVlcjEOMAwGA1UEAxMFcGVlcjAwWTATBgcqhkjOPQIBBggqhkjOPQMB\nBwNCAATAO26F9RQ30HBB0NfIYAcg4/tuv1TPceIiw6oKerjwJ7x4YrwZPKIo9n8U\nzd34oRZyHF43NCmrdHl1iyex0NMyo4IBBDCCAQAwDgYDVR0PAQH/BAQDAgOoMB0G\nA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1Ud\nDgQWBBQe+0nJt2el+MfjJpwFilqOICGXWzAfBgNVHSMEGDAWgBSPsl+4MPOzNDG5\n39nUIQyDanTBYjApBgNVHREEIjAgghNwZWVyMC5kaWQuYnlvbmR6Lmlvgglsb2Nh\nbGhvc3QwVgYIKgMEBQYHCAEESnsiYXR0cnMiOnsiaGYuQWZmaWxpYXRpb24iOiIi\nLCJoZi5FbnJvbGxtZW50SUQiOiJwZWVyMCIsImhmLlR5cGUiOiJwZWVyIn19MAoG\nCCqGSM49BAMCA0cAMEQCIGJcTr2Ugop6l4fRZcDuk5L0Ch6prq7vzY3rd9ii8PkG\nAiBcU/rYXoMELtb14Hw6hdOE1jA3OgexRQUJw3HUXjLPlQ==\n-----END CERTIFICATE-----\n",
         verify: false
     },
-    mspId: 'telefonicaMSP',
-    walletID: 'admin',
+    mspId: 'didMSP',
+    walletID: 'didMSP Admin',
     asLocalhost: false,
     ccp: ccp,
-    chaincodeName: "identitycc",
+    chaincodeName: "trustId",
     fcn: "proxy",
-    channel: "channel1"
+    channel: "mychannel"
 }
 
 async function configureNetwork() {
@@ -42,7 +43,7 @@ async function configureNetwork() {
 }
 
 // Create you own DID key pair and register it in the TrustID platform.
-async function createDID(){
+async function createDID() {
     // Generate key pair locally.
     const did = await wal.generateDID("RSA", "test", "test")
     console.log("[*] Generated DID: \n", did)
@@ -54,29 +55,48 @@ async function createDID(){
     // Get the registered identity.
     let res = await wal.networks.hf.getIdentity(did, did.id)
     console.log("[*] Get registered identity\n", res)
+    let didList = await wal.listDID()
+    console.log("[*] DID list: ", didList)
 }
 
 // Interact with a service in the platform (you need to create a service before
 // being able to call it).
-async function serviceInteraction(){
+async function serviceInteraction() {
     const did = await wal.getDID("default")
+
+    let access: AccessPolicy = { policy: PolicyType.PublicPolicy }
+
+    // Set Service
+    try {
+        await wal.networks.hf.createService(did, "byondz-did-v1", "trustId", access, "mychannel")
+    } catch (err) {
+        console.error(err)
+    }
     // Get service
-    let res = await wal.networks.hf.getService(did, "coren-trackscc")
+    let res = await wal.networks.hf.getService(did, "byondz-did-v1")
     console.log("[*] Service info:\n", res)
     // Create an asset in the service
-    const asset = {assetId: "test"+Date.now(), data:{"a":1, "b":2}, metadata: {"c": 4}}
+    const asset = { assetId: "test" + Date.now(), data: { "a": 1, "b": 2 }, metadata: { "c": 4 } }
     const assetStr = JSON.stringify(asset)
-    res = await wal.networks.hf.invoke(did, "coren-trackscc",["createAsset", assetStr], "channel1")
+    try {
+        res = await wal.networks.hf.invoke(did, "byondz-did-v1", ["createAsset", assetStr], "mychannel")
+    } catch (err) {
+        console.error(err)
+    }
     console.log("[*] Asset creation:\n", res)
     // Get the created asset.
-    res = await wal.networks.hf.invoke(did, "coren-trackscc",["getAsset", JSON.stringify({assetId: asset.assetId})], "channel1")
+    try {
+        res = await wal.networks.hf.invoke(did, "byondz-did-v1", ["getAsset", JSON.stringify({ assetId: asset.assetId })], "mychannel")
+    } catch (err) {
+        console.error(err)
+    }
     console.log("[*] Asset registered\n", res)
 }
 
 // Use the wallet to make offchain interactions with your DID
-async function walletInteraction(){
+async function walletInteraction() {
     const did = await wal.getDID("default")
-    const payload = {hello: "AWESOME PROJECT!!!"}
+    const payload = { hello: "AWESOME PROJECT!!!" }
     console.log("[*] Signing payload: \n", payload)
     const sign = await did.sign(payload)
     console.log("[*] DID signature\n", sign)
@@ -92,9 +112,9 @@ async function main() {
     await configureNetwork()
     await createDID()
     await serviceInteraction()
-    // await walletInteraction()
+    await walletInteraction()
     exit(1);
 }
 
-main().then(() =>{} ).catch(console.log)
+main().then(() => { }).catch(console.log)
 // tsc getting-started.ts && node getting-started.js
